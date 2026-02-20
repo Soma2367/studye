@@ -17,6 +17,17 @@ export default function QuestionModal({ isOpen, onClose }: QuestionModalProps) {
 
   if (!isOpen) return null;
 
+  const handleSubmit = async () => {
+    const response = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+    });
+
+    const data = await response.json();
+    console.log(data.question);
+  }
+
   return (
    <div className="fixed inset-0 flex items-center justify-center p-4">
     <div className="absolute inset-0" onClick={onClose} />
@@ -77,6 +88,7 @@ export default function QuestionModal({ isOpen, onClose }: QuestionModalProps) {
                 </button>
 
                 <button
+                    onClick={handleSubmit}
                     className="flex-[2.5] px-4 py-2 text-sm font-black text-cyan-700 uppercase tracking-[0.2em] ml-1 mb-3 block rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 shadow-md transition-all active:scale-[0.98] active:shadow-inner active:translate-y-0.5"
                 >
                     作成
