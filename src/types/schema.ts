@@ -36,3 +36,16 @@ export interface QuestionForm {
     questionType: QuestionType;
     option?: string;
 }
+
+//作成した問題
+export interface Question {
+    question: string;
+    choices: {
+        A: string;
+        B: string;
+        C: string;
+        D: string;
+    };
+    answer: 'A' | 'B' | 'C' | 'D';
+    explanation: string;
+}
