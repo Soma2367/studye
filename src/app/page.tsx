@@ -2,9 +2,21 @@
 
 import { useState } from "react";
 import QuestionModal from "@/components/QuestionModal";
+import { Question } from "@/types/schema";
+import QuestionDisplay from "@/components/QuestionDisplay";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [result, setResult] = useState<Question | null>(null);
+
+  const getQuestion = (question: Question) => {
+    setResult(question);
+    setIsModalOpen(false);
+  };
+
+  if(result) {
+    return <QuestionDisplay question={result} onBack={() => setResult(null)}/>;
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
@@ -27,6 +39,7 @@ export default function Home() {
       <QuestionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        getQuestion={getQuestion}
       />
     </main>
   );
