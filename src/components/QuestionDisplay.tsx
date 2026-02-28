@@ -1,6 +1,18 @@
 import { Question } from "@/types/schema";
+import { speak } from "@/utils/speach";
+import { useState } from "react";
+import { MdOutlineSettingsVoice } from "react-icons/md";
 
 export default function QuestionDisplay({ question, onBack }: { question: Question, onBack: () => void }) {
+  const [play, setPlay] = useState(false);
+
+  const handlePlay = () => {
+    setPlay(true);
+    speak(question.question, () => {
+      setPlay(false);
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
       <button
@@ -10,9 +22,18 @@ export default function QuestionDisplay({ question, onBack }: { question: Questi
         戻る
       </button>
       <div className="space-y-4 mb-12">
-        <p className="text-gray-500 max-w-sm mx-auto font-medium">
-          {question.question}
-        </p>
+        <div className="flex gap-4 items-center justify-center">
+            <p className="text-gray-500 max-w-sm mx-auto font-medium">
+              {question.question}
+            </p>
+            <button
+              onClick={handlePlay}
+              disabled={play}
+              className={`${play ? 'text-cyan-600' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
+              >
+                <MdOutlineSettingsVoice />
+            </button>
+        </div>
 
         <div>
             <ul>
