@@ -33,6 +33,7 @@ export async function generateQuestionAction(formData: QuestionForm): Promise<Ac
       }
 
       answerは必ずA、B、C、Dのいずれかで、choicesの中から正しい選択肢を指定してください。
+      解説する際は、それぞれの選択肢ごとに、なぜ正解なのか、なぜ不正解なのかを詳しく説明してください。
       ${formData.option ? `キーワードとして「${formData.option}」を必ず含めてください。` : ''}
     `.trim();
 
