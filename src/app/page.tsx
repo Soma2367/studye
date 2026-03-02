@@ -15,7 +15,7 @@ export default function Home() {
   };
 
   if(result) {
-    return <QuestionDisplay question={result} onBack={() => setResult(null)}/>;
+    return <QuestionDisplay question={result} onBack={() => setResult(null)} onNext={() => setResult(null)} />;
   }
 
   return (
