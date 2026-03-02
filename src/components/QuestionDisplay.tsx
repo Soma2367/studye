@@ -1,10 +1,12 @@
 import { Question } from "@/types/schema";
-import { speak } from "@/utils/speach";
+import { speak } from "@/utils/speak";
 import { useState } from "react";
 import { MdOutlineSettingsVoice } from "react-icons/md";
 
-export default function QuestionDisplay({ question, onBack }: { question: Question, onBack: () => void }) {
+export default function QuestionDisplay({ question, onBack, onNext }: { question: Question, onBack: () => void, onNext: () => void   }) {
   const [play, setPlay] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
 
   const handlePlay = () => {
     setPlay(true);
@@ -12,6 +14,12 @@ export default function QuestionDisplay({ question, onBack }: { question: Questi
       setPlay(false);
     });
   };
+
+  const selectAnswer = (key: string) => {
+    if (selectedChoice) return;
+    setSelectedChoice(key);
+    setShowAnswer(true);
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 text-center">
@@ -22,27 +30,55 @@ export default function QuestionDisplay({ question, onBack }: { question: Questi
         戻る
       </button>
       <div className="space-y-4 mb-12">
-        <div className="flex gap-4 items-center justify-center">
-            <p className="text-gray-500 max-w-sm mx-auto font-medium">
-              {question.question}
-            </p>
-            <button
-              onClick={handlePlay}
-              disabled={play}
-              className={`${play ? 'text-cyan-600' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
-              >
-                <MdOutlineSettingsVoice />
-            </button>
+        <div className="max-w-md mx-auto w-full px-2">
+            <div className="flex gap-4 items-center justify-between bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                <p className="text-gray-700 text-lg text-left font-medium leading-relaxed flex-1">
+                {question.question}
+                </p>
+                <button
+                onClick={handlePlay}
+                disabled={play}
+                className={`p-2 rounded-full flex-shrink-0 transition-all ${
+                    play
+                    ? 'text-cyan-600 bg-cyan-50 animate-pulse'
+                    : 'text-gray-400 hover:text-cyan-600 hover:bg-gray-50'
+                }`}
+                title="音声を再生"
+                >
+                <MdOutlineSettingsVoice size={24} />
+                </button>
+            </div>
+        </div>
+
+        <div className="max-w-md mx-auto w-full">
+            <ul className="space-y-3">
+                {Object.entries(question.choices).map(([key, value]) => (
+                <li
+                    key={key}
+                    className="grid grid-cols-[1.5rem_1fr] gap-2 items-start text-left p-3 bg-white rounded-xl border border-gray-200 shadow-sm hover:border-cyan-500 transition-colors"
+                >
+                    <button onClick={() => selectAnswer(key)}><span className="font-bold text-cyan-600">{key}:</span></button>
+                    <span className="text-gray-700 leading-relaxed">{value}</span>
+                </li>
+                ))}
+            </ul>
         </div>
 
         <div>
-            <ul>
-                {Object.entries(question.choices).map(([key, value]) => (
-                    <li key={key}>
-                    {key}: {value}
-                    </li>
-                ))}
-            </ul>
+            {showAnswer && <span className="block mb-2">{question.answer}</span>}
+            {showAnswer && <span className="block text-sm text-gray-600">{question.explanation}</span>}
+            <div className="gap-4 flex justify-center">
+                <button className="mt-4 px-6 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
+                    onClick={onBack}
+                >
+                    トップ画面へ
+                </button>
+                <button className="mt-4 px-6 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
+                    onClick={onNext}
+                >
+                    次の問題へ
+                </button>
+            </div>
         </div>
       </div>
     </div>
