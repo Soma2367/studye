@@ -2,20 +2,28 @@
 
 import { useState } from "react";
 import QuestionModal from "@/components/QuestionModal";
-import { Question } from "@/types/schema";
+import { Question, QuestionForm } from "@/types/schema";
 import QuestionDisplay from "@/components/QuestionDisplay";
+import { useQuestion } from "@/hooks/useQuestion";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [result, setResult] = useState<Question | null>(null);
+  const { question, isLoading, setNewQuestion, generateNext, clear } = useQuestion();
 
-  const getQuestion = (question: Question) => {
-    setResult(question);
+  const handleGetQuestion = (q: Question, config: QuestionForm) => {
+    setNewQuestion(q, config);
     setIsModalOpen(false);
-  };
+  }
 
-  if(result) {
-    return <QuestionDisplay question={result} onBack={() => setResult(null)} onNext={() => setResult(null)} />;
+    if (question) {
+    return (
+      <QuestionDisplay
+        question={question}
+        onBack={clear}
+        onNext={generateNext}
+        isLoading={isLoading}
+      />
+    );
   }
 
   return (
@@ -39,7 +47,7 @@ export default function Home() {
       <QuestionModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        getQuestion={getQuestion}
+        getQuestion={handleGetQuestion}
       />
     </main>
   );

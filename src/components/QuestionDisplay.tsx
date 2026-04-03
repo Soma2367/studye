@@ -3,7 +3,7 @@ import { speak } from "@/utils/speak";
 import { useState } from "react";
 import { MdOutlineSettingsVoice } from "react-icons/md";
 
-export default function QuestionDisplay({ question, onBack, onNext }: { question: Question, onBack: () => void, onNext: () => void   }) {
+export default function QuestionDisplay({ question, onBack, onNext, isLoading }: { question: Question, onBack: () => void, onNext: () => void, isLoading: boolean }) {
   const [play, setPlay] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
@@ -73,10 +73,11 @@ export default function QuestionDisplay({ question, onBack, onNext }: { question
                 >
                     トップ画面へ
                 </button>
-                <button className="mt-4 px-6 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors"
+                <button className="mt-4 px-6 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                     onClick={onNext}
+                    disabled={isLoading}
                 >
-                    次の問題へ
+                    {isLoading ? "生成中..." : "次の問題へ"}
                 </button>
             </div>
         </div>

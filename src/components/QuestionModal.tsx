@@ -1,36 +1,23 @@
 "use client";
 
-import { generateQuestionAction } from "@/actions/gemini";
+import { useQuestionForm } from "@/hooks/useQuestionForm";
 import { Question, QUESTION_TYPE_LABELS, QUESTION_TYPES, QuestionForm, TARGET_SCORE_LABELS, TARGET_SCORES } from "@/types/schema";
-import { useState } from "react";
 
 interface QuestionModalProps {
     isOpen: boolean;
     onClose: () => void;
-    getQuestion: (question: Question) => void;
+    getQuestion: (question: Question, config: QuestionForm) => void;
 }
 
 export default function QuestionModal({ isOpen, onClose, getQuestion }: QuestionModalProps) {
-    const [form, setForm] = useState<QuestionForm>({
-        targetScore: '200',
-        questionType: 'random',
-        option: '',
-    })
+    const { form, isLoading, updateConfig, submitForm } = useQuestionForm();
 
     if (!isOpen) return null;
 
     const handleSubmit = async () => {
-        try {
-            const result = await generateQuestionAction(form);
-
-            if (!result.success) {
-                console.error(result.error);
-                return;
-            }
-
-            getQuestion(result.data);
-        } catch (e) {
-            console.error("通信エラー", e);
+        const result = await submitForm();
+        if (result) {
+            getQuestion(result.question, result.config);
         }
     }
 
@@ -51,7 +38,7 @@ export default function QuestionModal({ isOpen, onClose, getQuestion }: Question
                                             ? "bg-cyan-600 border-cyan-600 text-white shadow-lg shadow-cyan-200"
                                             : "bg-gray-50 border-transparent text-gray-400 hover:bg-gray-100 disabled:opacity-50"
                                             }`}
-                                        onClick={() => setForm({ ...form, targetScore: score })}
+                                        onClick={() => updateConfig('targetScore', score)}
                                     >
                                         {TARGET_SCORE_LABELS[score]}
                                     </button>
@@ -68,7 +55,7 @@ export default function QuestionModal({ isOpen, onClose, getQuestion }: Question
                                             ? "bg-cyan-600 border-cyan-600 text-white shadow-lg shadow-cyan-200"
                                             : "bg-gray-50 border-transparent text-gray-400 hover:bg-gray-100 disabled:opacity-50"
                                             }`}
-                                        onClick={() => setForm({ ...form, questionType: question })}
+                                        onClick={() => updateConfig('questionType', question)}
                                     >
                                         {QUESTION_TYPE_LABELS[question]}
                                     </button>
@@ -80,7 +67,7 @@ export default function QuestionModal({ isOpen, onClose, getQuestion }: Question
                             <input
                                 type="text"
                                 id="option"
-                                onChange={(e) => setForm({ ...form, option: e.target.value })}
+                                onChange={(e) => updateConfig('option', e.target.value)}
                                 className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-[1.5rem] text-gray-700 font-bold placeholder-gray-300 focus:bg-white focus:border-cyan-600 focus:ring-0 outline-none transition-all shadow-sm" placeholder="Hello World" required />
                         </section>
                         <div className="flex gap-3 mt-6">
@@ -93,9 +80,10 @@ export default function QuestionModal({ isOpen, onClose, getQuestion }: Question
 
                             <button
                                 onClick={handleSubmit}
-                                className="flex-[2.5] px-4 py-2 text-sm font-black text-cyan-700 uppercase tracking-[0.2em] ml-1 mb-3 block rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 shadow-md transition-all active:scale-[0.98] active:shadow-inner active:translate-y-0.5"
+                                disabled={isLoading}
+                                className="flex-[2.5] px-4 py-2 text-sm font-black text-cyan-700 uppercase tracking-[0.2em] ml-1 mb-3 block rounded-lg bg-cyan-600 text-white hover:bg-cyan-700 shadow-md transition-all active:scale-[0.98] active:shadow-inner active:translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
                             >
-                                作成
+                                {isLoading ? "作成中..." : "作成"}
                             </button>
                         </div>
                     </div>
