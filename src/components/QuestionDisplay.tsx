@@ -1,19 +1,12 @@
+import { useSpeech } from "@/hooks/useSpeech";
 import { Question } from "@/types/schema";
-import { speak } from "@/utils/speak";
 import { useState } from "react";
 import { MdOutlineSettingsVoice } from "react-icons/md";
 
 export default function QuestionDisplay({ question, onBack, onNext, isLoading }: { question: Question, onBack: () => void, onNext: () => void, isLoading: boolean }) {
-  const [play, setPlay] = useState(false);
+  const {isSpeaking, play} = useSpeech();
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null);
-
-  const handlePlay = () => {
-    setPlay(true);
-    speak(question.question, () => {
-      setPlay(false);
-    });
-  };
 
   const selectAnswer = (key: string) => {
     if (selectedChoice) return;
@@ -36,10 +29,10 @@ export default function QuestionDisplay({ question, onBack, onNext, isLoading }:
                 {question.question}
                 </p>
                 <button
-                onClick={handlePlay}
-                disabled={play}
+                onClick={ () => play(question.question) }
+                disabled={isSpeaking}
                 className={`p-2 rounded-full flex-shrink-0 transition-all ${
-                    play
+                    isSpeaking
                     ? 'text-cyan-600 bg-cyan-50 animate-pulse'
                     : 'text-gray-400 hover:text-cyan-600 hover:bg-gray-50'
                 }`}
